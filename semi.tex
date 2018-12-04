@@ -1,0 +1,274 @@
+\documentclass[a4paper]{jsarticle}
+\usepackage[utf8]{inputenc}
+\usepackage{verbatim}
+\usepackage{amsmath}
+\usepackage{theorem}
+\usepackage{amsfonts}
+\usepackage{bm}
+\usepackage{jlisting}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{framed}
+\usepackage[dvipdfmx]{hyperref}
+
+\newcommand{\paren}[1]{ \left( #1 \right) }
+\newcommand{\abs}[1]{ \left| #1 \right| }
+\newcommand{\ary}[2]{ #1\left[ #2 \right] }
+\newcommand{\orderO}[1]{\mathrm{O}(#1)}
+\newcommand{\orderTheta}[1]{\mathrm{\Theta}(#1)}
+\newcommand{\orderOmega}[1]{\mathrm{\Omega}(#1)}
+\newcommand{\Int}{\mathbb{Z}}
+\DeclareMathOperator{\suppplus}{\mathrm{supp}^{+}}
+\DeclareMathOperator{\suppminus}{\mathrm{supp}^{-}}
+
+\DeclareMathOperator{\dom}{\mathrm{dom}}
+
+\theorembodyfont{\normalfont}
+\theoremstyle{break}
+\newtheorem{theo}{定理}[section]
+\newtheorem{defi}{定義}[section]
+\newtheorem{lemm}{補題}[section]
+\newtheorem{prop}{命題}[section]
+\newtheorem{proof}{証明}[section] 
+\newtheorem{example}{例}[section]
+\newtheorem{cor}{系}[section]
+
+\title{離散凸解析ゼミ}
+\author{寺崎 峻}
+\date{\today}
+\begin{document}
+\maketitle
+\section*{用語}
+グラフ$G=(V,E)$に対する用語を定義しておく．
+\begin{itemize}
+  \item 路 \\
+    辺の集合$P = \{(u_1,v_1),(u_2,v_2),\cdots,(u_n,v_n)\}$であって$v_i = u_{i+1}$を満たすもの．
+  \item 連結 \\
+    任意の頂点$u,v\in V$に対してその2頂点を結ぶ路が存在すること．
+  \item 閉路 \\
+    端点が等しい路のこと．
+  \item 森 \\
+    閉路を含まないグラフのこと．
+  \item 木 \\
+    森であって連結なグラフのこと．
+  \item 全域木 \\
+    頂点集合が$V$となる木のこと．
+\end{itemize}
+\section{M凸関数}
+この章ではM凸関数を定義し，マトロイドとの関係について説明する．具体例として全域木を考え，最小全域木におけるKruscal法が最適解を出力することを離散凸解析の枠組みで示す．
+
+まず，全域木の性質について述べる．
+\begin{theo}
+  グラフを$G=(V,E)$とし，$T,S\subseteq E$を$G$の全域木とする．このとき，任意の$e\in T\setminus S$に対して，ある$f\in S\setminus T$があって，$T-\{e\}+\{f\},S-\{f\}+\{e\}$はともに全域木となる．
+\end{theo}
+\begin{proof}
+  任意の$e\in T\setminus S$に対して$S+e$には閉路ができる．これを$C_e$とおく．このとき，$C_e-e$には$e$の2端点$(u,v)$を結ぶ路ができる．
+\end{proof}
+全域木における「辺を交換できる」という性質は，離散凸解析におけるM凸集合として一般化することができる．また，上の定理から次の系が直ちに導かれる．
+\begin{cor}
+  $G=(V,E)$とし，$T,S$を$G$の相異なる部分木とする．このとき，任意の$e\in T\setminus S$に対して，次のいずれかが成り立つ．
+  \begin{enumerate}
+    \item ある$f\in S\setminus T$があって，$T-\{e\}+\{f\},S-\{f\}+\{e\}$は部分森となる．
+    \item $T-\{e\},S+\{e\}$は部分森となる．
+  \end{enumerate}
+\end{cor}
+上記の部分森の性質は離散凸解析におけるM${}^\natural$凸集合として一般化される．
+\begin{defi}[M凸集合] 
+  $S\subseteq \Int^n$がM凸集合であるとは，任意の$x,y\in S$について次のことが成り立つことをいう．
+  \begin{quote}
+    $x(i) > y(i)$なる$i$について，$x(j) < x(j)$を満たす$j$が存在し，$x-e_i+e_j,y+e_i-e_j\in S$
+  \end{quote}
+\end{defi}
+\begin{example}[全域木] 
+全域木の場合，以下のようにしてM凸集合とみなすことができる．まず有限集合$E = \{e_1,e_2,\cdots,e_n\}$の部分集合$S$に対する特性ベクトル$x_S\in \{0,1\}^{\abs{E}}$を次式で定義する．
+\begin{align*}
+  x_S(i) = \begin{cases}
+    1 & e_i \in S \\
+    0 & \mathrm{otherwise}
+  \end{cases}
+\end{align*}
+ただし，$x_S(i)$は$x_S$の第$i$成分を表す．つまり第$i$成分には$e_i$が属しているかどうかの情報が格納されている．
+$S = \{ x_T \mid T \subseteq E はGの全域木\} \subseteq \Int^{\abs{E}}$とすると，これはM凸集合になっている．
+\end{example}
+\begin{defi}[M${}^\natural$凸集合] 
+  $S\subseteq \Int^n$がM${}^\natural$凸集合であるとは，任意の$x,y\in S$について次のことが成り立つことをいう．
+  \begin{quote}
+    $x(i) > y(i)$なる$i$について，次のいずれかが成り立つ．
+    \begin{enumerate}
+      \item $x(j) < x(j)$を満たす$j$が存在し，$x-e_i+e_j,y+e_i-e_j\in S$ 
+      \item $x-e_i,y+e_i\in S$
+    \end{enumerate}   
+  \end{quote}
+\end{defi}
+凸解析における凸関数は，離散凸解析ではM凸関数として定式化される．
+M凸集合を考える上で，必要な記号を定義しておく．まず，$x,y\in \Int^n$に対して，$\suppplus{x-y} := \{ i \in \{1,\cdots,n\} \mid x(i) > y(i) \}$
+\begin{defi}[M凸関数]
+  関数$f\colon \Int^n \to \mathbb{R}\cup \{+\infty\}$に対して定義域$\dom f$を
+  \begin{align*}
+    \dom f := \{ x \in \Int^n \mid f(x) < \infty \}
+  \end{align*}
+  で定義する．このとき，任意の$x,y\in \dom f$に対して，次のことが成り立つとき，$f$をM凸関数という．
+  \begin{quote}
+    任意の$i \in \suppplus(x-y)$についてある$j \in \suppminus(x-y)$が存在して
+    \begin{align*}
+      f(x) + f(y) \geq f(x-e_i+e_j) + f(x-e_j+e_i)
+    \end{align*}   
+  \end{quote}
+\end{defi}
+\begin{prop}
+  関数$f\colon \Int^n \to \mathbb{R}\cup \{+\infty\}$がM凸関数であるとき，$\dom f$はM凸集合をなす．
+\end{prop}
+\begin{proof}
+  $x,y\in \dom f$とする．任意の$i\in \suppplus(x-y)$についてある$j\in \suppminus(x-y)$が存在し上の不等式を満たすため，明らかに$f(x-e_i+e_j)<\infty ,f(x-e_j+e_i)<\infty$．よって$x-e_i+e_j,x-e_j+e_i\in \dom f$となり，$\dom f$がM凸集合であることが示された．
+\end{proof}
+$f(x-e_i+e_j) + f(x-e_j+e_i)$が$f(x)+f(y)$以下になるという性質は
+\begin{example}[全域木の長さ] 
+  グラフ$G=(V,E)$とその辺の長さ$d\colon E \to \mathbb{R}$が与えられたとき，全域木$T\in E$の長さ$d(T)$を次式で定義する．
+  \begin{align*}
+    d(T) := \sum_{e\in T} d(e)
+  \end{align*}
+  この関数は次のようにしてM凸関数とみなすことが出来る．
+  \begin{align*}
+    f(x) + f(y) & = d(X)+d(Y) \\
+                & = \sum_{e\in X}d(e) + \sum_{e\in Y}d(e)  \\
+                & = \sum_{e\in X-e_i+e_j}d(e) + \sum_{e\in Y+e_i-e_j}d(e)  \\
+                & = f(x-e_i+e_j) + f(y-e_j+e_i)
+  \end{align*}
+\end{example}
+\begin{theo}
+  関数$f\colon \Int^n \to \mathbb{R} \cup \{+\infty\} $がM凸関数のとき，$x\in \dom f$が最小解となるための必要十分条件は，
+
+  $\forall  i, j \in \{ 1, \cdots , n \}$
+  \begin{align*}
+    f(x) \leq f(x-e_i + e_j)
+  \end{align*}
+\end{theo}
+\begin{proof}
+  必要性は明らか．十分性を対偶により証明する．
+  $x$が最小解でないとき，$f(y) < f(x)$なる$y\in \Int^n$が存在する．
+\end{proof}
+
+\begin{defi}[マトロイド] 
+  有限集合$E$とその集合族$\mathcal{F} \subseteq 2^E$が以下の公理を満たすとき，$(E,\mathcal{F})$をマトロイドという．
+  \begin{enumerate}
+    \item $\emptyset \in \mathcal{F}$
+    \item $Y\in \mathcal{F}$で$X\subseteq Y$のとき$X\in \mathcal{F}$
+    \item $X,Y\in \mathcal{F}$で$\abs{X}<\abs{Y}$のとき，ある$e\in Y\setminus X$があって$X\cup \{e\} \in \mathcal{F}$．
+  \end{enumerate}
+\end{defi}
+
+\begin{lemm}
+  マトロイド$(E,\mathcal{F})$の任意の基$X,Y$に対して次のことが成り立つ．
+
+  任意の$e\in X\setminus Y$に対して，ある$e'\in Y\setminus X$が存在し，$X-\{e\}+\{e'\},Y+\{e\}-\{e'\}$が共にマトロイドの基となる
+\end{lemm}
+\begin{proof}
+  $e\in X\setminus Y$とする．$Y\setminus X$の要素$e'$で，$X-\{e\}+\{e'\}\in \mathcal{F}$となる$e'$を$e_1',e_2',\cdots,e_n'$とする．なお，公理3よりそのような$e'$は少なくとも1つ以上存在する．
+  \begin{align*}
+    Y &- \{e_1'\} - \{e_2'\} - \cdots - \{e_n'\}  \\
+      & + \{f_1\} + \{f_2\} + \cdots + \{f_n\} \in \mathcal{F}
+  \end{align*}
+\end{proof}
+
+\begin{defi}[マトロイドの最小基問題] 
+  マトロイド$(E,\mathcal{F})$と重み$c\colon E\to \mathbb{R}$に対して
+  \begin{align*}
+    \mathrm{minimize} &\quad  \sum_{e\in B} c(e) \\
+    \mathrm{subject\ to}  &\quad  Bは(E,\mathcal{F})の基
+  \end{align*}
+  で定義される問題をマトロイドの最小基問題という．
+\end{defi}
+\begin{defi}[最小基問題上の貪欲法] 
+  次の算法を最小基問題上の貪欲法という．
+  \begin{enumerate}
+    \item $c(e_1) \leq c(e_2) \leq \cdots \leq c(e_n)$となるように$E=\{e_1,\cdots,e_n\}$に番号付けをする．
+    \item $X=\emptyset$とし，$i=1,2,\cdots,n$について
+      $X\cup \{e_i\} \in \mathcal{F}$なら$X:=X\cup \{e_i\}$
+      を繰り返す
+    \item $X$を出力する
+  \end{enumerate}
+\end{defi}
+
+\begin{theo}
+  最小基問題に対する貪欲法は最適解を出力する．
+\end{theo}
+\begin{proof}
+  $f\colon\Int^n \to \mathbb{R}\cup \{+\infty\}$を
+  \begin{align*}
+    f(x) := \begin{cases}
+      \sum_{e\in B}c(e) & x=e_B,Bは(E,\mathcal{F})の基 \\
+      +\infty
+    \end{cases}
+  \end{align*}
+  と定義する．このとき，$f$はM凸関数．
+  貪欲法の出力を$B$とする．$B\in \mathcal{F}$であり，$B$は基になっている．
+  もし$B$が最小基でないとすると，定理より$f(e_B)>f(e_B-e_i+e_j)$なる$i,j\in \{1,\cdots,\abs{E}\}$がある．すると，
+  \begin{align*}
+    \sum_{e\in B} c(e) > \sum_{e\in B \setminus \{e_i\}\cup \{e_j\}} c(e)
+  \end{align*}
+  よって$c(i) > c(j)$．
+
+  すると$j$を$X$に入れるかどうかのとき，$X$は$B-\{i\}$の部分集合なので，$\{j\}\cup X \in \mathcal{F}$より$j$は$X$に加えられるはずである．よって矛盾．
+\end{proof}
+\section{L凸関数}
+この章では最短路問題に対する最適性について論じ，L凸との関連について説明していく．
+\begin{prop}
+  グラフ$G=(V,E)$において，与えられた始点から各頂点への最短路が存在するための必要十分条件は，負閉路が存在しないことである．
+\end{prop}
+\begin{defi}[ポテンシャル] 
+  グラフ$G=(V,E)$の各頂点$v\in V$に値を割り振る$\abs{V}$次元ベクトル$p \in \Int^{\abs{V}}$がポテンシャルであるとは，任意の辺$(u,v)\in E$に対して
+  \begin{align*}
+    p(v) - p(u) \leq l(u,v)
+  \end{align*}
+  を満たすことをいう．
+\end{defi}
+\begin{prop}
+  グラフ$G=(V,E)$，長さ関数$l\colon E\to \Int$において，$s\in V$から各頂点$t\in V$に最短路が存在するための必要十分条件は，ポテンシャルが存在することである．
+\end{prop}
+\begin{proof}
+  ポテンシャルとして$p(v)$を$s$から$v$への最短路の長さと定義する．
+\end{proof}
+\begin{theo}[双対性] 
+  グラフ$G=(V,E)$の始点$s\in V$から各頂点への最短路が存在すると仮定する．このとき，次の弱双対性と強双対性が成り立つ．
+  \begin{align*}
+    \sum_{t\in V} l\paren{P(s,t)} \geq \sum_{t\in V} ( p(t) - p(s) )
+  \end{align*}
+\end{theo}
+\begin{defi}[L${ }^\natural$凸集合] 
+  次の条件を満たす集合$S\subseteq \Int^n$をL${ }^\natural$凸集合という．
+  \begin{quote}
+    任意の$p,q\in S$，$\alpha \in \Int_{\geq 0}$に対して，
+    \begin{align*}
+      (p-\alpha \boldmath{1}) \lor q \in S
+    \end{align*}
+  \end{quote}
+\end{defi}
+\begin{defi}
+  次の条件を満たすL${}^\natural$凸集合$S$をL凸集合という．
+  \begin{quote}
+    任意の$p\in S$に対して，$p+1,p-1\in S$
+  \end{quote}
+\end{defi}
+\begin{prop}
+  $S\in \Int^n$がL凸集合であるための必要十分条件は，
+  \begin{enumerate}
+    \item 任意の$p\in S$に対して，$p+1,p-1 \in S$．
+    \item 任意の$p,q \in S$に対して，$p\lor q ,p\land q \in S$
+  \end{enumerate}
+\end{prop}
+\begin{proof}
+  必要性は明らか．十分性を示す．$p\in S$なら$p-1 \in S$なので，これを$\alpha$回繰り返し$p-\alpha 1 \in S$．よって$(p-\alpha 1 ) \lor q , p\land ( q+\alpha 1) \in S$．
+\end{proof}
+\begin{example}
+  グラフ$G=(V,E)$に対するポテンシャル$p\in \Int^{\abs{V}}$全体の集合はL凸集合．まず，$p\in S$のとき，
+  \begin{align*}
+    (p(v)\pm 1) - (p(u) \pm 1) = p(v) - p(u) \leq l(u,v)
+  \end{align*}
+  よって$p\pm 1\in S．$
+  $p,q\in S$のとき，任意の$(u,v) \in E$に対して，
+  \begin{align*}
+    (p\lor q)(v) - (p\lor q)(u) = p(v) - (p\lor q)(u) \leq p(v) - p(u) \leq l(u,v)
+  \end{align*}
+  よって$p\lor q\in S$．$p\land q\in S$も同様に導かれる．
+\end{example}
+\end{document}
