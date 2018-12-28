@@ -1,4 +1,4 @@
-\documentclass[a4paper]{jsarticle}
+\documentclass[uplatex]{jsarticle}
 \usepackage[utf8]{inputenc}
 \usepackage{verbatim}
 \usepackage{amsmath}
@@ -18,6 +18,8 @@
 \newcommand{\orderTheta}[1]{\mathrm{\Theta}(#1)}
 \newcommand{\orderOmega}[1]{\mathrm{\Omega}(#1)}
 \newcommand{\Int}{\mathbb{Z}}
+\newcommand{\Real}{\mathbb{R}}
+\newcommand{\fundef}[3]{#1\colon #2 \to #3}
 \DeclareMathOperator{\suppplus}{\mathrm{supp}^{+}}
 \DeclareMathOperator{\suppminus}{\mathrm{supp}^{-}}
 
@@ -38,7 +40,7 @@
 \begin{document}
 \maketitle
 \section*{用語}
-グラフ$G=(V,E)$に対する用語を定義しておく．
+グラフ$G=(V,E)$に対する用語を定義する．
 \begin{itemize}
   \item 路 \\
     辺の集合$P = \{(u_1,v_1),(u_2,v_2),\cdots,(u_n,v_n)\}$であって$v_i = u_{i+1}$を満たすもの．
@@ -270,4 +272,35 @@ $f(x-e_i+e_j) + f(x-e_j+e_i)$が$f(x)+f(y)$以下になるという性質は
   \end{align*}
   よって$p\lor q\in S$．$p\land q\in S$も同様に導かれる．
 \end{example}
+\begin{defi}[L$^\natural$凸関数]
+  関数$g\colon \Int^n \to \Real \cup \{+\infty \}$が$\dom g\neq \emptyset$かつ
+  \begin{quote}
+    $\forall \alpha \in \Int_{\geq 0} , \forall p,q \in \Int^n$
+    \begin{align*}
+      g(p)+g(q) \geq g\paren{ (p-\alpha 1)\lor q} + g\paren{ p\land (q+\alpha 1) }
+    \end{align*}
+  \end{quote}
+  を満たすとき，$g$をL$^\natural$凸関数とよぶ．
+\end{defi}
+\begin{defi}[L$^\natural$凹関数]
+  $-g$がL$^\natural$凸関数であるとき，$g$をL$^\natural$凹関数とよぶ．
+\end{defi}
+\begin{theo}
+  $\fundef{g}{\Int^n}{\Real\cup \{+\infty\}}$がL$^\natural$凸関数であるとき，
+  \begin{quote}
+    $p\in \dom g$が$g$の最小解$\Leftrightarrow$ 任意の$X\subseteq \{1,2,\cdots,n\}$ に対して$g(p)\leq \min \{g(p+e_X),g(p-e_X)\}$
+  \end{quote}
+\end{theo}
+\begin{cor}
+  $\fundef{g}{\Int^n}{\Real\cup \{+\infty\}}$がL$^\natural$凸関数であるとき，
+  \begin{quote}
+    $p\in \dom g$が$g$の最大解$\Leftrightarrow$ 任意の$X\subseteq \{1,2,\cdots,n\}$ に対して$g(p)\geq \max \{g(p+e_X),g(p-e_X)\}$
+  \end{quote}
+\end{cor}
+\begin{enumerate}
+  \item 初期解$p_0\in \dom g$を選び，$p_i = p_0$とおく．
+  \item $\forall X\subseteq \{1,2,\cdots,n\}$と$\forall \varepsilon \in \{+1,-1\}$に対して$g(p)\geq g(p+\varepsilon e_X)$なら$p$を最適解として出力して終了．そうでないならステップ3へ
+  \item $g(p+\varepsilon e_X)$を最大にする$X\subseteq \{1,2,\cdots,n\}$及び$\varepsilon \in \{+1,-1\}$を選び，$p := p+\varepsilon e_x$とおいてステップ2へ
+\end{enumerate}
+これはL$^\natural$凹関数最大化に対する貪欲アルゴリズムであるが，実はダイクストラ法はこの貪欲アルゴリズムの一種とみなすことが出来る．
 \end{document}
