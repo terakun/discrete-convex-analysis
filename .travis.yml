@@ -1,0 +1,16 @@
+before_install:
+- "sudo apt-get update && sudo apt-get install --no-install-recommends texlive-fonts-recommended texlive-latex-extra texlive-fonts-extra texlive-latex-recommended dvipng"
+script:
+- mkdir _build
+- uplatex -output-directory _build semi.tex
+- dvipdfmx -o _build/semi.pdf _build/semi.dvi 
+deploy:
+  provider: releases
+  api_key:
+    secure: "iZnjLWo1JV4Xs2UGZgn8wv6X1/t6cmlOrzMtta2FActdWnfVH+5lOIRn3/+UGXBPhfT1//xNqSJJeB+YDgmsncgzRVVIXidUjMx4ymw9wNIYmW8FpBh1hfBEupznnBYtEg5Am3OjQF0dVU/9AgZBCM56gDFvxDmeKR2sKLdSpGVnXNZbif8cU3fPqLB92z6CHx7UGFWVsOJwBVif5t/HlTxVo7rMtiNSrNO9ex8dC86YMMOao/R6pc5AGYs9+AB7QpTJczAcwCXUWuMKlWW7bOGAVuZLFV1IO7us390iJ3PYWMC/EMRk0TFB8g5gmrmcPv2Bhf9RdLe+lPeE4et2akPqFIPD4jXrMb5SKXmRkvAC1m3wZGgrN8wsUSilo+pxpHOQfFPgqqyt9GejI/+eqwAkv8FYsqqxUMf9Fky+SPg+S/RbLtTgY230cp59d/azgX+qA6iRVkZq6a47qDJK65aWvQ98Hxb2/E8KjwjMAo0lOlWPGYWIwHSy2dTy+hZ/VX1yQ0X4zaXSVkBhxMIVagDrPA8rZV9AyR9AllnVfItY5Gvla+LKgDH9pEH9tGsdgqNYrSdnAHOTYwag9Oe6XWo1dPOnnkw5y25QwOSlvcIfu1JjWtDslpf0fy3FnTcU/fZVZaqE4am9t7a/AAsaNhbb32oYLoJ+FWR4xNi/oGM="
+  file:
+  - _build/semi.pdf
+  skip_cleanup: true
+  on:
+    repo: terakun/discrete-convex-analysis
+    tags: true
