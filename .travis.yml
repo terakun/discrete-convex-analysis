@@ -1,11 +1,15 @@
+before_install:
+- "sudo apt update && sudo apt install texlive-full"
 script:
 - mkdir _build
+- uplatex -output-directory _build semi.tex
+- dvipdfmx -o _build/semi.pdf _build/semi.dvi
 deploy:
   provider: releases
   api_key:
     secure: "7eISnks9mQK5EeWDyGWlPIMQm9dy0tKetbmtLREdRhVYwnfMipKahn84s7zFOxfCcWGhVeOb19EFFxZ4CB8juZezPOKfK1YDg4+bRbqlggRDCwsxEBkMICNMfxSgI7MwM3sEOLbbSuvFlbnsGR5Kh603hodWPyYdFuqsOtV3wDg2k4cv5WK1qMsckLm5BdiB5ifSLuCCHEHEAYpN784WMNz6n9dWiQZb87wpL5kgTI3bS3TmM9lbyaFieAfGl7Z1k/FgrVrVTfCjxI7GhxiZXzgI9XYQnLm+Ufv+eYzCJCWS+Bz6+P2jgLiYT6kyJ3WIYfknERx2OSM0AjKn7KmsFh2FeSL3UGHIyAilJawWlSWxZ4AoS3cwI/SjUUJaHY/ziM3iru/D8TrwNk8UmMopdJUHeV1UsxBjOwG7BAgmNcqze0T5zDedufMBi4W7ie9c4lWGnPj9apkPaIww+4c90kActRUwuF8LsxShtDIOMMEba4lS8CTrr0OeqHpiVJcY8g9rpUvCScmv2f47lSTbl08lcMK8ghOluux0tCThcvWAmENYB+6UoTn8Ny6FXr2RekzARhrvsrNvksgQRC4G/7gyZL0HHqKW4Z89fudWGGnB6LJ6V4CqYsWME/aEsPMdsZ9quk379D5uoT1si1C44y1Lu70v/S93xdwbmqUL0g0="
   file:
-  - "semi.tex"
+  - "_build/semi.pdf"
   on:
     repo: terakun/discrete-convex-analysis
     tags: false
