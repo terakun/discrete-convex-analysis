@@ -1,9 +1,10 @@
-before_install:
-- "sudo apt update && sudo apt install texlive-full"
+sudo: required
+dist: trusty
+services: docker
 script:
-- mkdir _build
-- uplatex -output-directory _build semi.tex
-- dvipdfmx -o _build/semi.pdf _build/semi.dvi
+- wget https://raw.githubusercontent.com/blang/latex-docker/master/latexdockercmd.sh
+- chmod +x latexdockercmd.sh
+- ./latexdockercmd.sh latexmk -pdf -outdir=_build semi.tex
 deploy:
   provider: releases
   api_key:
