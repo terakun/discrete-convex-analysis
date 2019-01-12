@@ -4,7 +4,7 @@ services: docker
 script:
 - wget https://raw.githubusercontent.com/blang/latex-docker/master/latexdockercmd.sh
 - chmod +x latexdockercmd.sh
-- ./latexdockercmd.sh latexmk -pdf -outdir=_build semi.tex
+- ./latexdockercmd.sh latexmk -pdf -latex=uplatex -outdir=_build semi.tex
 deploy:
   provider: releases
   api_key:
