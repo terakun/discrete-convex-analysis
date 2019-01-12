@@ -2,8 +2,9 @@ sudo: required
 dist: trusty
 services: docker
 script:
-- docker run --rm -it -v $PWD:/workdir paperist/alpine-texlive-ja
-- latexmk semi.tex 
+- wget 'https://gist.githubusercontent.com/terakun/59ee29a5aec3730322f4329f3e3571dd/raw/61ac2404845b7f427fb9b8cb797e43e26618bf37/latexmk.sh'
+- chmod +x latexmk.sh
+- ./latexmk.sh latexmk semi.tex 
 deploy:
   provider: releases
   api_key:
